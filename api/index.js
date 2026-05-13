@@ -75,8 +75,13 @@ app.use('/api/timetable', require('./timetable'));
 app.use('/api/library', require('./library'));
 
 // Health check
-app.get('/api/health', (req, res) => {
+const healthHandler = (req, res) => {
   res.json({ status: 'OK', message: 'SmartCampus ERP Server is running' });
+};
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
+app.get('/api', (req, res) => {
+  res.json({ status: 'OK', message: 'SmartCampus ERP API is available' });
 });
 
 // Error handling middleware
