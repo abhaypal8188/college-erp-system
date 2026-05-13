@@ -98,6 +98,34 @@ REACT_APP_API_URL=https://your-app-name.vercel.app/api
 - Clear browser cache
 - Check that API base URL is correct in frontend code
 
+### 404 NOT_FOUND on API Endpoints
+- Verify that `vercel.json` is in the project root
+- Ensure `zeroConfig: false` is set in build configs to disable auto-detection
+- Check that `api/index.js` is properly exporting the Express app
+- Ensure API environment variables (MONGODB_URI, JWT_SECRET, etc.) are set in Vercel Dashboard
+- Redeploy after updating `vercel.json`:
+  ```bash
+  git add vercel.json
+  git commit -m "Fix Vercel API routes"
+  git push origin main
+  ```
+  Then trigger a redeploy from Vercel Dashboard
+
+## ✅ Deployment Verification
+
+Test the following URLs after deployment:
+
+```bash
+# Health check
+https://your-project-name.vercel.app/api/health
+
+# Expected response:
+{"status":"OK","message":"SmartCampus ERP Server is running"}
+
+# Frontend
+https://your-project-name.vercel.app
+```
+
 ## 📞 Support
 
 If you encounter issues:
