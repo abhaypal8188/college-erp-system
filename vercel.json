@@ -1,29 +1,32 @@
 {
   "version": 3,
+  "framework": null,
   "builds": [
     {
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/build"
+        "distDir": "client/build",
+        "buildCommand": "npm run build",
+        "zeroConfig": false
       }
     },
     {
       "src": "api/index.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "zeroConfig": false
+      }
     }
   ],
   "routes": [
     {
-      "src": "^/api/(.*)$",
-      "dest": "/api"
+      "src": "^/api(/.*)?$",
+      "dest": "/api/index.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/client/$1"
+      "src": "/.*",
+      "dest": "/client/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }

@@ -1,0 +1,16 @@
+{
+  "name": "smartcampus-erp",
+  "version": "1.0.0",
+  "description": "Full-stack MERN College ERP System",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd client && npm install && cd ../api && npm install",
+    "build": "cd client && npm run build",
+    "start:client": "cd client && npm start",
+    "start:api": "cd api && npm start",
+    "dev": "concurrently \"npm run start:client\" \"npm run start:api\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
