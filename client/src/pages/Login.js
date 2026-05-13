@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ const Login = () => {
     password: '',
     role: 'student'
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,10 +21,25 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', formData);
-    // For now, navigate to dashboard
-    navigate('/dashboard');
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/auth/login', formData);
+
+      if (response.data.success) {
+        // Store token and user data
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Navigate to dashboard
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,12 +129,19 @@ const Login = () => {
             </div>
           </div>
 
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="text-sm text-red-700">{error}</div>
+            </div>
+          )}
+
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>

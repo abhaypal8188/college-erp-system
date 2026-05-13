@@ -33,8 +33,10 @@ vercel --prod
 ### Step 4: Configure Environment Variables
 In your Vercel dashboard, go to Project Settings > Environment Variables and add:
 
+**For the API (Backend):**
 ```
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/smartcampus-erp
+CLIENT_URL=https://your-app-name.vercel.app
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 JWT_EXPIRE=7d
 EMAIL_USER=your-email@gmail.com
@@ -42,6 +44,18 @@ EMAIL_PASS=your-email-password
 CLOUDINARY_CLOUD_NAME=your-cloudinary-name
 CLOUDINARY_API_KEY=your-cloudinary-api-key
 CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+```
+
+**For the Client (Frontend):**
+```
+REACT_APP_API_URL=https://your-app-name.vercel.app/api
+```
+
+### Step 5: Update Client Configuration
+After deployment, update the client `.env` file with your production API URL:
+
+```env
+REACT_APP_API_URL=https://your-app-name.vercel.app/api
 ```
 
 ### Step 5: Access Your App

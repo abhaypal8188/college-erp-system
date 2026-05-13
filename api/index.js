@@ -9,7 +9,42 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+
+// CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:3000', // Local development
+      'http://localhost:5000', // Local API
+      process.env.CLIENT_URL, // Production client URL
+      /\.vercel\.app$/, // Allow all Vercel deployments
+    ].filter(Boolean); // Remove undefined values
+
+    // Check if the origin is allowed
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return allowedOrigin === origin;
+      }
+      // For regex patterns
+      return allowedOrigin.test(origin);
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
