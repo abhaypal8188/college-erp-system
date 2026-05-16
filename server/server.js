@@ -20,13 +20,40 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/smartcampus-erp', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+// Database connection - Serverless Optimized
+const connectDB = async () => {
+  // If already connected or connecting, don't create a new connection
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+  
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/smartcampus-erp';
+  
+  try {
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000, // Timeout quickly if DB is unreachable
+    });
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
+
+// Middleware to ensure DB connection before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Database connection failed', 
+      error: error.message,
+      hint: !process.env.MONGODB_URI ? "MONGODB_URI environment variable is missing" : "Check MongoDB Atlas Network Access and credentials"
+    });
+  }
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
