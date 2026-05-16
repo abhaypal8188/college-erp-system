@@ -44,6 +44,15 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'SmartCampus ERP Server is running' });
 });
 
+// Database health check (for debugging)
+app.get('/api/db-health', (req, res) => {
+  res.json({ 
+    hasUri: !!process.env.MONGODB_URI,
+    readyState: mongoose.connection.readyState,
+    uriPreview: process.env.MONGODB_URI ? `${process.env.MONGODB_URI.substring(0, 15)}...` : 'Not Set'
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
